@@ -31,11 +31,25 @@ ip = args.ip
 user = args.user
 pass_found = False
 
-if args.port:
-    port = args.port
-    port = int(port)
-else:
-    port = 21
+
+#TREATING INPUT OF PORTS
+try:
+    if args.port:
+        port = args.port
+        port = int(port)
+        if port > 65536:
+            print("\n\033[31m[-]\033[m Ports must be between 1 and 65536!")
+            sys.exit()
+    else:
+        port = 21
+
+except ValueError:
+    print(f"\n\033[31m[-]\033[m {port} is not a valid port!")
+    sys.exit()
+
+except TypeError:
+            print("\n\033[31m[-]\033[m The ports need to be an integer number!")
+            sys.exit()
 
 #DATA TIME
 print('-' * 50)
@@ -50,9 +64,11 @@ except (FileNotFoundError, OSError):
     print("\n\033[31m[-]\033[m File not found!")
     sys.exit()
 
+#READ LINES OF WORDLIST
 for line in file.readlines():
         line = line.strip()
         print(f'\n\033[33m[!]\033[m Testing user "{user}" with password "{line}".')
+        #STARTING THE BRUTE FORCE
         try:
             ftp = ftplib.FTP(ip)
             ftp.connect(host=ip, port=port)
